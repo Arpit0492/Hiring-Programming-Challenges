@@ -1,6 +1,6 @@
 /*
 sort array of words by their lengths and ASCII values(Alphabetically)
-
+*/
 
 #include<stdio.h>
 #include<string.h>
