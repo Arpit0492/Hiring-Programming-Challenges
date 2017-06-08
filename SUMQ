@@ -1,0 +1,355 @@
+/**
+ * Created by Arpit on 02-06-2017.
+ */
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.math.BigInteger;
+import java.util.*;
+import static java.lang.System.*;
+
+/*
+tc 1
+1
+5 6 7
+71 18 11 12 6
+20 31 10 8 2 16
+5 17 22 3 42 16 60
+o/p : 58973
+tc 2
+1
+4 3 4
+9 4 2 1
+5 6 10
+3 4 8 7
+o/p : 4321
+
+tc 3
+
+ */
+class SUMQ{
+    private static final long mod = 1000000007;
+    public static void main(String[] args) {
+        fastIO fs = new fastIO();
+        fs.InputReader(in);
+        fs.pw = new PrintWriter(new OutputStreamWriter(out));
+        int T = fs.nextInt();
+        for (int i = 0; i <T; i++) {
+            int p = fs.nextInt(), q = fs.nextInt(), r = fs.nextInt();
+            long [] A = new long[p];
+            long [] aSums = new long[p];
+            HashMap<Long,Integer> mapA = new HashMap<>();
+
+            long [] B = new long[q];
+            long [] C = new long[r];
+            long [] cSums = new long[r];
+            HashMap<Long,Integer> mapC = new HashMap<>();
+
+
+            for (int j = 0; j <p; j++) {
+                A[j] = fs.nextLong();
+                mapA.put(A[j],0);
+            }
+            for (int j = 0; j <q; j++) {
+                B[j] = fs.nextLong();
+            }
+            for (int j = 0; j <r; j++) {
+                C[j] = fs.nextLong();
+                mapC.put(C[j],0);
+            }
+
+            Arrays.sort(A);
+            Arrays.sort(B);
+            Arrays.sort(C);
+
+            //postions of B elements in A and C
+            int [] posYA = positionOfBelementsInArray(A,B,mapA);
+            int [] posYC = positionOfBelementsInArray(C,B,mapC);
+
+            // sum of elements of A and C from 0 till element's position
+            long aSum = 0, cSum = 0;
+            for (int j = 0; j <p; j++) {
+                aSum += A[j];
+                aSums[j] = aSum;
+            }
+            for (int j = 0; j <r; j++) {
+                cSum += C[j];
+                cSums[j] = cSum;
+            }
+
+//            System.out.println(Arrays.toString(A));
+//            System.out.println(Arrays.toString(B));
+//            System.out.println(Arrays.toString(C));
+//            System.out.println(Arrays.toString(posYA) +" "+Arrays.toString(posYC));
+//            System.out.println(Arrays.toString(aSums) +" "+Arrays.toString(cSums));
+
+            long ans = 0;
+            for (int j = 0; j <q; j++) {
+                if (posYA[j]==A.length)
+                    posYA[j] = posYA[j]-1;
+                if (posYC[j]==C.length)
+                    posYC[j] = posYC[j]-1;
+                if (posYA[j]<0)
+                    continue;
+                if (posYC[j]<0)
+                    continue;
+                long sumOfXY = B[j]*(posYA[j]+1) + aSums[posYA[j]];
+                long sumOfYZ = B[j]*(posYC[j]+1) + cSums[posYC[j]];
+                ans += (sumOfXY*sumOfYZ)%mod;
+            }
+
+            fs.pw.println(ans%mod);
+        }
+        fs.pw.flush();
+        fs.pw.close();
+    }
+
+    private static int[] positionOfBelementsInArray(long[] posInto, long[] b, HashMap<Long, Integer> map) {
+
+        int [] posArray = new int[b.length];
+        for (int j = 0; j <b.length; j++) {
+            int pos = Arrays.binarySearch(posInto,b[j]);
+            if (pos<0) {
+                pos = (pos + 1) * (-1);
+            }
+            if (map.containsKey(b[j]))
+                posArray[j] = pos;
+            else
+                posArray[j] = pos-1;
+        }
+
+        return posArray;
+    }
+
+}
+
+
+
+class fastIO
+{
+    private InputStream stream;
+    private byte[] buf = new byte[1024];
+    private int curChar;
+    private int numChars;
+    private SpaceCharFilter filter;
+    PrintWriter pw;
+    int MOD = 1000000007;
+
+    void InputReader(InputStream stream1) {
+        stream = stream1;
+    }
+
+    private boolean isWhitespace(int c) {
+        return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == -1;
+    }
+
+    private boolean isEndOfLine(int c) {
+        return c == '\n' || c == '\r' || c == -1;
+    }
+
+    int read() {
+        if (numChars == -1)
+            throw new InputMismatchException();
+        if (curChar >= numChars) {
+            curChar = 0;
+            try {
+                numChars = stream.read(buf);
+            } catch (IOException e) {
+                throw new InputMismatchException();
+            }
+            if (numChars <= 0)
+                return -1;
+        }
+        return buf[curChar++];
+    }
+
+    int nextInt() {
+        int c = read();
+        while (isSpaceChar(c))
+            c = read();
+        int sgn = 1;
+        if (c == '-') {
+            sgn = -1;
+            c = read();
+        }
+        int res = 0;
+        do {
+            if (c < '0' || c > '9')
+                throw new InputMismatchException();
+            res *= 10;
+            res += c - '0';
+            c = read();
+        } while (!isSpaceChar(c));
+        return res * sgn;
+    }
+
+    long nextLong() {
+        int c = read();
+        while (isSpaceChar(c))
+            c = read();
+        int sgn = 1;
+        if (c == '-') {
+            sgn = -1;
+            c = read();
+        }
+        long res = 0;
+        do {
+            if (c < '0' || c > '9')
+                throw new InputMismatchException();
+            res *= 10;
+            res += c - '0';
+            c = read();
+        } while (!isSpaceChar(c));
+        return res * sgn;
+    }
+
+    String nextToken() {
+        int c = read();
+        while (isSpaceChar(c))
+            c = read();
+        StringBuilder res = new StringBuilder();
+        do {
+            res.appendCodePoint(c);
+            c = read();
+        } while (!isSpaceChar(c));
+        return res.toString();
+    }
+
+    String nextLine() {
+        int c = read();
+        while (isSpaceChar(c))
+            c = read();
+        StringBuilder res = new StringBuilder();
+        do {
+            res.appendCodePoint(c);
+            c = read();
+        } while (!isEndOfLine(c));
+        return res.toString();
+    }
+
+    int[] nextIntArray(int n) {
+        int[] arr = new int[n];
+        for (int i = 0; i < n; i++) {
+            arr[i] = nextInt();
+        }
+        return arr;
+    }
+
+    int[][] next2dArray(int n, int m) {
+        int[][] arr = new int[n][m];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                arr[i][j] = nextInt();
+            }
+        }
+        return arr;
+    }
+    char[][] nextCharArray(int n,int m){
+        char [][]c=new char[n][m];
+        for(int i=0;i<n;i++){
+            String s=nextLine();
+            for(int j=0;j<s.length();j++){
+                c[i][j]=s.charAt(j);
+            }
+        }
+        return c;
+    }
+
+    long[] nextLongArray(int n) {
+        long[] arr = new long[n];
+        for (int i = 0; i < n; i++) {
+            arr[i] = nextLong();
+        }
+        return arr;
+    }
+
+    String[] nextStringArray(int n) {
+
+        String ans [] = new String[n];
+        for (int i = 0; i <n; i++) {
+            ans [i] = nextToken();
+        }
+        return ans;
+    }
+    String[] nextStringLineArray(int n) {
+
+        String ans [] = new String[n];
+        for (int i = 0; i <n; i++) {
+            ans [i] = nextLine();
+        }
+        return ans;
+    }
+
+    void pArray(int[] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            pw.print(arr[i] + " ");
+        }
+        pw.println();
+        return;
+    }
+
+    void pArray(long[] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            pw.print(arr[i] + " ");
+        }
+        pw.println();
+        return;
+    }
+
+    void pArray(boolean[] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            pw.print(arr[i] + " ");
+        }
+        pw.println();
+        return;
+    }
+
+    private boolean isSpaceChar(int c) {
+        if (filter != null)
+            return filter.isSpaceChar(c);
+        return isWhitespace(c);
+    }
+
+    private interface SpaceCharFilter {
+        public boolean isSpaceChar(int ch);
+    }
+}
+
+
+class SUMQBruteForce {
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(in);
+        int T = scan.nextInt();
+        for (int i = 0; i <T; i++) {
+            int p = scan.nextInt(), q = scan.nextInt(), r = scan.nextInt();
+            long [] A = new long[p];
+            long [] B = new long[q];
+            long [] C = new long[r];
+
+            for (int j = 0; j <p; j++) {
+                A[j] = scan.nextLong();
+            }
+            for (int j = 0; j <q; j++) {
+                B[j] = scan.nextLong();
+            }
+            for (int j = 0; j <r; j++) {
+                C[j] = scan.nextLong();
+            }
+
+            BigInteger ans = BigInteger.ZERO;
+            BigInteger mod = new BigInteger("1000000007");
+            for (int X = 0; X <p; X++) {
+                for (int Y = 0; Y <q; Y++) {
+                    for (int Z = 0; Z <r; Z++) {
+                        if (A[X]<=B[Y] && B[Y]>=C[Z])
+                            ans = ans.add(new BigInteger(""+(A[X]+B[Y])*(B[Y]+C[Z])));
+                    }
+                }
+            }
+
+            out.println(ans.mod(mod));
+
+        }
+    }
+}
