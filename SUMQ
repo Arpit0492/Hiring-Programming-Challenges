@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.util.*;
 import static java.lang.System.*;
 /*
+https://www.codechef.com/JUNE17
 problem difficulty = medium
 accuracy = 7.34%
 status = AC
